@@ -78,14 +78,17 @@ module.exports = {
     "record": "湘ICP备20007679号-1",
     "startYear": "2019",
 
-    // "vssueConfig": {
-    //   "platform": 'github',
-    //   "owner": 'zhanbo136',
-    //   "repo": 'blog',
-    //   "clientId": '775622ba18a0c4ba0f32',
-    //   "clientSecret": 'e7e9d1adba55c92e7ecb35056f3561152a72dbfb',
-    // },
+    "vssueConfig": {
+      "platform": 'github',
+      "owner": 'zhanbo136',
+      "repo": 'blog',
+      "clientId": '775622ba18a0c4ba0f32',
+      "clientSecret": 'e7e9d1adba55c92e7ecb35056f3561152a72dbfb',
+      //"autoCreateIssue": ture,
+    },
+    //"autoCreateIssue": ture,
   },
+  
   "markdown": {
     "lineNumbers": true
   }
