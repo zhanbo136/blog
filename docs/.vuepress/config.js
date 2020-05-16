@@ -55,8 +55,10 @@ module.exports = {
     ],
     "valineConfig": {
       "appId": 'Px3q15tIRKr8180cIW40GUfG-gzGzoHsz',// your appId
-      "appKey": 'rVpmiCirbJhpvVH0Lt071Pky', // your appKey
-      "visitor": true
+      "appKey": 'rVpmiCirbJhpvVH0Lt071Pky' // your appKey
+      // "visitor": true,
+      // "enableQQ": true,
+      // "requiredFields":['nick','mail']
     },
     "type": "blog",
     "blogConfig": {
@@ -74,7 +76,7 @@ module.exports = {
         "title": "麋鹿",
         "desc": "Enjoy when you can, and endure when you must.",
         "email": "1243875403@qq.com",
-        "link": "https://www.codezhanbo.cn"
+        "link": "http://www.codezhanbo.cn"
       },
       {
         "title": "vuepress-theme-reco",
@@ -83,13 +85,13 @@ module.exports = {
         "link": "https://vuepress-theme-reco.recoluan.com"
       }
     ],
-    "logo": "https://guliedu-zhanbo.oss-cn-beijing.aliyuncs.com/logo.png",
+    "logo": "https://guliedu-zhanbo.oss-cn-beijing.aliyuncs.com/blog/image/20200516123335.png",
     "search": true,
     "searchMaxSuggestions": 10,
     "sidebar": "auto",
     "lastUpdated": "Last Updated",
     "author": "麋鹿",
-    "authorAvatar": "https://guliedu-zhanbo.oss-cn-beijing.aliyuncs.com/avatar.png",
+    "authorAvatar": "https://guliedu-zhanbo.oss-cn-beijing.aliyuncs.com/blog/image/20200516120700.jpg",
     "record": "湘ICP备20007679号-1",
     "startYear": "2019",
 

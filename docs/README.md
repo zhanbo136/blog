@@ -1,6 +1,6 @@
 ---
 home: true
-#heroImage: https://guliedu-zhanbo.oss-cn-beijing.aliyuncs.com/hero.png
+# heroImage: https://guliedu-zhanbo.oss-cn-beijing.aliyuncs.com/hero.png
 # heroImageStyle: {
 #   maxWidth: '600px',
 #   width: '100%',

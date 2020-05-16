@@ -752,3 +752,140 @@ Observer：接收输入
 
 
 ### 3.19、解释器模式
+
+> **基本介绍** 
+
+- 1) 在编译原理中，一个算术表达式通过词法分析器形成词法单元，而后这些词法 单元再通过语法分析器构建语法分析树，最终形成一颗抽象的语法分析树。这 里的词法分析器和语法分析器都可以看做是解释器 
+- 2) 解释器模式（Interpreter Pattern）：是指给定一个语言(表达式)，定义它的文法 的一种表示，并定义一个解释器，使用该解释器来解释语言中的句子(表达式) 
+- 3) 应用场景 • 应用可以将一个需要解释执行的语言中的句子表示为一个抽象语法树 • 一些重复出现的问题可以用一种简单的语言来表达 • 一个简单语法需要解释的场景 
+- 4) 这样的例子还有，比如编译器、运算表达式计算、正则表达式、机器人等
+
+> **解释器模式的原理类图**
+
+**对原理类图的说明-即(解释器模式的角色及职责)** 
+
+- 1) Context: 是环境角色,含有解释器之外的全局信息. 
+- 2) AbstractExpression: 抽象表达式， 声明一个抽象的解释操作,这个方法为抽象语法树中所有的节点所 共享 
+- 3) TerminalExpression: 为终结符表达式, 实现与文法中的终结符相关的解释操作 
+- 4) NonTermialExpression: 为非终结符表达式，为文法中的非终结符实现解释操作. 
+- 5) 说明： 输入Context he TerminalExpression 信息通过Client 输入即可
+
+![image-20200515132010576](https://guliedu-zhanbo.oss-cn-beijing.aliyuncs.com/blog/image/20200515132105.png)
+
+
+
+> **解释器模式在Spring框架应用的源码剖析**
+
+1) Spring框架中 SpelExpressionParser就使用到解释器模式 
+
+2) 代码分析+Debug源码
+
+![image-20200515132041571](https://guliedu-zhanbo.oss-cn-beijing.aliyuncs.com/blog/image/20200515132057.png)
+
+3) 说明 - Expression 接口 表达式接口 - 下面有不同的实现类，比如SpelExpression, 或者CompositeStringExpression。 - 使用时候，根据你创建的不同的Parser 对象，返回不同的 Expression 对象 public Expression parseExpression(String expressionString, ParserContext context) throws ParseException { if (context == null) { context = NON_TEMPLATE_PARSER_CONTEXT; }
+if (context.isTemplate()) { return parseTemplate(expressionString, context); //返回的就是 CompositeStringExpression } else { return doParseExpression(expressionString, context); //返回的就是SpelExpression } } - 使用得当 Expression对象，调用getValue 解释执行 表达式，最后得到结果
+
+> **解释器模式的注意事项和细节**
+
+- 1) 当有一个语言需要解释执行，可将该语言中的句子表示为一个抽象语法树，就可以 考虑使用解释器模式，让程序具有良好的扩展性 
+- 2) 应用场景：编译器、运算表达式计算、正则表达式、机器人等
+- 3) 使用解释器可能带来的问题：解释器模式会引起类膨胀、解释器模式采用递归调用 方法，将会导致调试非常复杂、效率可能降低.
+
+### 3.20、状态模式
+
+> **基本介绍**
+
+- 1) 状态模式（State Pattern）：它主要用来解决对象在多种状态转换时，需要对外 输出不同的行为的问题。状态和行为是一一对应的，状态之间可以相互转换 
+- 2) 当一个对象的内在状态改变时，允许改变其行为，这个对象看起来像是改变了 其类
+
+> **状态模式的原理类图**
+
+**对原理类图的说明-即(状态模式的角色及职责)** 
+
+- 1) Context 类为环境角色, 用于维护State实例,这个实例定义当前状态 
+- 2) State 是抽象状态角色,定义一个接口封装与Context 的一个特点接口相关行为 
+- 3) ConcreteState 具体的状态角色，每个子类实现一个与Context 的一个状态相关行为
+
+![image-20200515132205047](https://guliedu-zhanbo.oss-cn-beijing.aliyuncs.com/blog/image/20200515132208.png)
+
+> **状态模式在实际项目-借贷平台 源码剖析**
+
+- 1) 借贷平台的订单，有审核-发布-抢单 等等 步骤，随着操作的不同，会改变订单的 状态, 项目中的这个模块实现就会使用到状态模式 
+- 2) 通常通过if/else判断订单的状态，从而实现不同的逻辑，伪代码如下
+
+![image-20200515132248223](https://guliedu-zhanbo.oss-cn-beijing.aliyuncs.com/blog/image/20200515132329.png)
+
+
+
+> **状态模式的注意事项和细节**
+
+- 1) 代码有很强的可读性。状态模式将每个状态的行为封装到对应的一个类中 
+- 2) 方便维护。将容易产生问题的if-else语句删除了，如果把每个状态的行为都放到一 个类中，每次调用方法时都要判断当前是什么状态，不但会产出很多if-else语句， 而且容易出错 
+- 3) 符合“开闭原则”。容易增删状态 
+- 4) 会产生很多类。每个状态都要一个对应的类，当状态过多时会产生很多类，加大维 护难度 
+- 5) 应用场景：当一个事件或者对象有很多种状态，状态之间会相互转换，对不同的状 态要求有不同的行为的时候，可以考虑使用状态模式
+
+### 3.21、策略模式
+
+> **基本介绍**
+
+- 1) 策略模式（Strategy Pattern）中，定义算法族，分别封装起来，让他们之间可以 互相替换，此模式让算法的变化独立于使用算法的客户 
+- 2) 这算法体现了几个设计原则，第一、把变化的代码从不变的代码中分离出来； 第二、针对接口编程而不是具体类（定义了策略接口）；第三、多用组合/聚合， 少用继承（客户通过组合方式使用策略）。
+
+> **策略模式的原理类图**
+
+![image-20200515132314805](https://guliedu-zhanbo.oss-cn-beijing.aliyuncs.com/blog/image/20200515132326.png)
+
+
+
+> **策略模式在JDK-Arrays 应用的源码分析**
+
+- 1) JDK的 Arrays 的Comparator就使用了策略模式 
+- 2) 代码分析+Debug源码+模式角色分析
+
+![image-20200515132402738](https://guliedu-zhanbo.oss-cn-beijing.aliyuncs.com/blog/image/20200515132403.png)
+
+> **策略模式的注意事项和细节**
+
+- 1) 策略模式的关键是：分析项目中变化部分与不变部分 
+- 2) 策略模式的核心思想是：多用组合/聚合 少用继承；用行为类组合，而不是行为的 继承。更有弹性 
+- 3) 体现了“对修改关闭，对扩展开放”原则，客户端增加行为不用修改原有代码，只 要添加一种策略（或者行为）即可，避免了使用多重转移语句（if..else if..else）
+- 4) 提供了可以替换继承关系的办法： 策略模式将算法封装在独立的Strategy类中使得 你可以独立于其Context改变它，使它易于切换、易于理解、易于扩展 
+- 5) 需要注意的是：每添加一个策略就要增加一个类，当策略过多是会导致类数目庞大
+
+### 3.22、职责链模式
+
+> **基本介绍**
+
+- 1) 职责链模式（Chain of Responsibility Pattern）, 又叫 责任链模式，为请求创建了一个接收者 对象的链(简单示意图)。这种模式对请求的 发送者和接收者进行解耦。 
+- 2) 职责链模式通常每个接收者都包含对另一个接 收者的引用。如果一个对象不能处理该请求， 那么它会把相同的请求传给下一个接收者，依 此类推。
+- 3) 这种类型的设计模式属于行为型模式
+
+![image-20200515132431296](https://guliedu-zhanbo.oss-cn-beijing.aliyuncs.com/blog/image/20200515132432.png)
+
+> **职责链模式的原理类图**
+
+![image-20200515132450010](https://guliedu-zhanbo.oss-cn-beijing.aliyuncs.com/blog/image/20200515132857.png)
+
+> **对原理类图的说明-即(职责链模式的角色及职责)** 
+
+- 1) Handler : 抽象的处理者, 定义了一个处理请求的接口, 同时含义另外Handler 
+- 2) ConcreteHandlerA , B 是具体的处理者, 处理它自己负责的请求， 可以访问它的后继者(即下一个处 理者), 如果可以处理当前请求，则处理，否则就将该请求交个 后继者去处理，从而形成一个职责链 
+- 3) Request ， 含义很多属性，表示一个请求
+
+> **职责链模式在SpringMVC框架应用的源码分析**
+
+- 1) SpringMVC-HandlerExecutionChain 类就使用到职责链模式 
+- 2) SpringMVC请求流程简图 
+- 3) 说明 - springmvc 请求的流程图中，执行了 拦截器相关方法 interceptor.preHandler 等等 - 在处理SpringMvc请求时，使用到职责链模式还使用到适配器模式 - HandlerExecutionChain 主要负责的是请求拦截器的执行和请求处理,但是他本身不 处理请求，只是将请求分配给链上注册处理器执行，这是职责链实现方式,减少职责 链本身与处理逻辑之间的耦合,规范了处理流程 - HandlerExecutionChain 维护了 HandlerInterceptor 的集合， 可以向其中注册相应 的拦截器.
+
+![image-20200515132510118](https://guliedu-zhanbo.oss-cn-beijing.aliyuncs.com/blog/image/20200515132652.png)
+
+> **职责链模式的注意事项和细节**
+
+- 1) 将请求和处理分开，实现解耦，提高系统的灵活性 
+- 2) 简化了对象，使对象不需要知道链的结构 
+- 3) 性能会受到影响，特别是在链比较长的时候，因此需控制链中最大节点数量，一般 通过在Handler中设置一个最大节点数量，在setNext()方法中判断是否已经超过阀值， 超过则不允许该链建立，避免出现超长链无意识地破坏系统性能
+- 4) 调试不方便。采用了类似递归的方式，调试时逻辑可能比较复杂 
+- 5) 最佳应用场景：有多个对象可以处理同一个请求时，比如：多级请求、请假/加薪 等审批流程、Java Web中Tomcat对Encoding的处理、拦截器
+
