@@ -132,7 +132,7 @@ categories:
 - 3) 计算时间复杂度的方法： 
   -  用常数 1 代替运行时间中的所有加法常数 T(n)=n²+7n+6 =>T(n)=n²+7n+1 
   -  修改后的运行次数函数中，只保留最高阶项 T(n)=n²+7n+1=>T(n)=n² 
-  - 去除最高阶项的系数 T(n)=n² =>T(n)=n² =>O(n²) 
+  -  去除最高阶项的系数 T(n)=n² =>T(n)=n² =>O(n²) 
 
 > **常见的时间复杂度**
 
@@ -444,5 +444,435 @@ public static void sort2(int array[]){
 
 ### 归并排序
 
+> **归并排序介绍:**
+
+归并排序（MERGE-SORT）是利用归并的思想实现的排序方法，该算法采用经典的分治（divide-and-conquer） 策略（分治法将问题分(divide)成一些小的问题然后递归求解，而治(conquer)的阶段则将分的阶段得到的各答案"修 补"在一起，即分而治之)。
+
+>  **归并排序思想示意图 1-基本思想:**
+
+![image-20200520212933685](https://guliedu-zhanbo.oss-cn-beijing.aliyuncs.com/blog/image/20200520212935.png) 
+
+>  **归并排序思想示意图 2-合并相邻有序子序列:**
+
+再来看看治阶段，我们需要将两个已经有序的子序列合并成一个有序序列，比如上图中的最后一次合并，要将 [4,5,7,8]和[1,2,3,6]两个已经有序的子序列，合并为最终序列[1,2,3,4,5,6,7,8]，来看下实现步骤
+
+![image-20200520212952328](https://guliedu-zhanbo.oss-cn-beijing.aliyuncs.com/blog/image/20200520212953.png)
+
+>  **归并排序的应用实例:** 
+
+```java
+/**
+     * 分+合方法
+     * @param arr 排序数组
+     * @param left 最左
+     * @param right 最右
+     * @param temp
+     */
+    public static void sort(int[] arr, int left, int right, int[] temp) {
+        if(left < right) {
+            int mid = (left + right) / 2; //中间索引
+            //向左递归进行分解
+            sort(arr, left, mid, temp);
+            //向右递归进行分解
+            sort(arr, mid + 1, right, temp);
+            //合并
+            merge(arr, left, mid, right, temp);
+
+        }
+    }
+
+    /**
+     *合并方法
+     * @param arr 排序的原始数组
+     * @param left 左边有序序列的初始索引
+     * @param mid 中间索引
+     * @param right 右边索引
+     * @param temp 做中转的数组
+     */
+    public static void merge(int[] arr, int left, int mid, int right, int[] temp) {
+        int i = left; // 初始化i, 左边有序序列的初始索引
+        int j = mid + 1; //初始化j, 右边有序序列的初始索引
+        int t = 0; // 指向temp数组的当前索引
+        //(一)
+        //先把左右两边(有序)的数据按照规则填充到temp数组
+        //直到左右两边的有序序列，有一边处理完毕为止
+        while (i <= mid && j <= right) {//继续
+            //如果左边的有序序列的当前元素，小于等于右边有序序列的当前元素
+            //即将左边的当前元素，填充到 temp数组
+            //然后 t++, i++
+            if(arr[i] <= arr[j]) {
+                temp[t] = arr[i];
+                t += 1;
+                i += 1;
+            } else { //反之,将右边有序序列的当前元素，填充到temp数组
+                temp[t] = arr[j];
+                t += 1;
+                j += 1;
+            }
+        }
+        //(二)
+        //把有剩余数据的一边的数据依次全部填充到temp
+        while( i <= mid) { //左边的有序序列还有剩余的元素，就全部填充到temp
+            temp[t] = arr[i];
+            t += 1;
+            i += 1;
+        }
+        while( j <= right) { //右边的有序序列还有剩余的元素，就全部填充到temp
+            temp[t] = arr[j];
+            t += 1;
+            j += 1;
+        }
+        //(三)
+        //将temp数组的元素拷贝到arr
+        //注意，并不是每次都拷贝所有
+        t = 0;
+        int tempLeft = left; //
+        //第一次合并 tempLeft = 0 , right = 1 //  tempLeft = 2  right = 3 // tL=0 ri=3
+        //最后一次 tempLeft = 0  right = 7
+        while(tempLeft <= right) {
+            arr[tempLeft] = temp[t];
+            t += 1;
+            tempLeft += 1;
+        }
+    }
+```
+
 ### 基数排序
 
+> **基数排序(桶排序)介绍:**
+
+- 1) 基数排序（radixsort）属于“分配式排序”（distributionsort），又称“桶子法”（bucket sort）或 binsort，顾
+  名思义，它是通过键值的各个位的值，将要排序的元素分配至某些“桶”中，达到排序的作用 
+- 2) 基数排序法是属于稳定性的排序，基数排序法的是效率高的稳定性排序法 
+- 3) 基数排序(RadixSort)是桶排序的扩展 
+- 4) 基数排序是 1887 年赫尔曼·何乐礼发明的。它是这样实现的：将整数按位数切割成不同的数字，然后按每个
+  位数分别比较。 
+
+> **基数排序基本思想**
+
+- 1) 将所有待比较数值统一为同样的数位长度，数位较短的数前面补零。然后，从最低位开始，依次进行一次排序。 这样从最低位排序一直到最高位排序完成以后, 数列就变成一个有序序列。
+- 2) 这样说明，比较难理解，下面我们看一个图文解释，理解基数排序的步骤
+
+ **基数排序图文说明** 
+
+将数组 {53,3,542,748,14,214} 使用基数排序, 进行升序排序
+
+![image-20200520213122944](https://guliedu-zhanbo.oss-cn-beijing.aliyuncs.com/blog/image/20200520213123.png)
+
+![image-20200520213131587](https://guliedu-zhanbo.oss-cn-beijing.aliyuncs.com/blog/image/20200520213132.png)
+
+>  **基数排序归应用实例**
+
+```java
+/**
+     * 基数排序
+     * @param arr
+     */
+    public static void sort(int[] arr) {
+        //根据前面的推导过程，我们可以得到最终的基数排序代码
+        //1. 得到数组中最大的数的位数
+        int max = arr[0]; //假设第一数就是最大数
+        for(int i = 1; i < arr.length; i++) {
+            if (arr[i] > max) {
+                max = arr[i];
+            }
+        }
+        //得到最大数是几位数
+        int maxLength = (max + "").length();
+        //定义一个二维数组，表示10个桶, 每个桶就是一个一维数组
+        //说明
+        //1. 二维数组包含10个一维数组
+        //2. 为了防止在放入数的时候，数据溢出，则每个一维数组(桶)，大小定为arr.length
+        //3. 名明确，基数排序是使用空间换时间的经典算法
+        int[][] bucket = new int[10][arr.length];
+        //为了记录每个桶中，实际存放了多少个数据,我们定义一个一维数组来记录各个桶的每次放入的数据个数
+        //可以这里理解
+        //比如：bucketElementCounts[0] , 记录的就是  bucket[0] 桶的放入数据个数
+        int[] bucketElementCounts = new int[10];
+        //这里我们使用循环将代码处理
+        for(int i = 0 , n = 1; i < maxLength; i++, n *= 10) {
+            //(针对每个元素的对应位进行排序处理)， 第一次是个位，第二次是十位，第三次是百位..
+            for(int j = 0; j < arr.length; j++) {
+                //取出每个元素的对应位的值
+                int digitOfElement = arr[j] / n % 10;
+                //放入到对应的桶中
+                bucket[digitOfElement][bucketElementCounts[digitOfElement]] = arr[j];
+                bucketElementCounts[digitOfElement]++;
+            }
+            //按照这个桶的顺序(一维数组的下标依次取出数据，放入原来数组)
+            int index = 0;
+            //遍历每一桶，并将桶中是数据，放入到原数组
+            for(int k = 0; k < bucketElementCounts.length; k++) {
+                //如果桶中，有数据，我们才放入到原数组
+                if(bucketElementCounts[k] != 0) {
+                    //循环该桶即第k个桶(即第k个一维数组), 放入
+                    for(int l = 0; l < bucketElementCounts[k]; l++) {
+                        //取出元素放入到arr
+                        arr[index++] = bucket[k][l];
+                    }
+                }
+                //第i+1轮处理后，需要将每个 bucketElementCounts[k] = 0 ！！！！
+                bucketElementCounts[k] = 0;
+            }
+            //System.out.println("第"+(i+1)+"轮，对个位的排序处理 arr =" + Arrays.toString(arr));
+        }
+    }
+```
+
+ **基数排序的说明:**
+
+- 1) 基数排序是对传统桶排序的扩展，速度很快. 
+- 2) 基数排序是经典的空间换时间的方式，占用内存很大, 当对海量数据排序时，容易造成 OutOfMemoryError 。 
+- 3) 基数排序时稳定的。[注:假定在待排序的记录序列中，存在多个具有相同的关键字的记录，若经过排序，这些 记录的相对次序保持不变，即在原序列中，r[i]=r[j]，且 r[i]在 r[j]之前，而在排序后的序列中，r[i]仍在 r[j]之前， 则称这种排序算法是稳定的；否则称为不稳定的] 
+- 4) 有负数的数组，我们不用基数排序来进行排序, 如果要支持负数，参考:https://code.i-harness.com/zh-CN/q/e98fa9
+
+### 常用排序算法总结和对比 
+
+> **一张排序算法的比较图**
+
+![image-20200520213430282](https://guliedu-zhanbo.oss-cn-beijing.aliyuncs.com/blog/image/20200520213431.png)
+
+>  **相关术语解释：**
+
+- 1) 稳定：如果 a 原本在 b 前面，而 a=b，排序之后 a 仍然在 b 的前面； 
+- 2) 不稳定：如果 a 原本在 b 的前面，而 a=b，排序之后 a 可能会出现在 b 的后面； 
+- 3) 内排序：所有排序操作都在内存中完成； 
+- 4) 外排序：由于数据太大，因此把数据放在磁盘中，而排序通过磁盘和内存的数据传输才能进行；
+- 5) 时间复杂度： 一个算法执行所耗费的时间。 
+- 6) 空间复杂度：运行完一个程序所需内存的大小。 
+- 7) n: 数据规模 
+- 8) k: “桶”的个数 
+- 9) In-place: 不占用额外内存 
+- 10) Out-place: 占用额外内存
+
+## 查找
+
+在 java 中，我们常用的查找有四种: 
+
+- 1) 顺序(线性)查找 
+- 2) 二分查找/折半查找
+- 3) 插值查找 
+- 4) 斐波那契查找 
+
+### 线性查找
+
+有一个数列： {1,8,10, 89,1000,1234} ，判断数列中是否包含此名称【顺序查找】 要求: 如果找到了，就提
+示找到，并给出下标值。
+
+```java
+ public static  int  search(int array[] ,int value){
+        for (int i =0  ;i <array.length ;i++)
+            if(array[i] == value)
+                return i;
+        return -1;
+    }
+```
+
+### 二分查找
+
+请对一个有序数组进行二分查找 {1,8,10,89,1000,1234} ，输入一个数看看该数组是否存在此数，并且求出下 标，如果没有就提示"没有这个数"。 
+
+二分查找算法的思路
+
+![image-20200520224725680](https://guliedu-zhanbo.oss-cn-beijing.aliyuncs.com/blog/image/20200520224729.png)
+
+二分查找的代码 
+
+```java
+ /**递归版
+     * @param array
+     * @param left
+     * @param right
+     * @param findValue
+     */
+    public static int search(int array[], int left, int right, int findValue) {
+        if (left > right) //未找到
+            return -1;
+        int mid = (left + right) / 2;
+        if (findValue > array[mid]) { //右递归
+            return search(array, mid + 1, right, findValue);
+        } else if (findValue < array[mid]) {//左递归
+            return search(array, left, mid - 1, findValue);
+        } else {
+            return mid;
+        }
+    }
+
+    /**
+     * 二分查找非递归
+     * @param array
+     * @param key
+     * @return
+     */
+    public static int search3(int array[], int key) {
+        int mid;
+        int left = 0;
+        int right = array.length - 1;
+        while (left <= right) {
+            mid = (right - left) / 2 + left;
+            if (key < array[mid]) {
+                right = mid - 1;
+            } else if (key > array[mid]) {
+                left = mid + 1;
+            } else {
+                return mid;
+            }
+        }
+        return -1;
+    }
+```
+
+### 插值查找
+
+> **插值查找原理介绍:**
+
+插值查找算法类似于二分查找，不同的是插值查找每次从自适应 mid 处开始查找。 
+
+将折半查找中的求 mid 索引的公式 ,low 表示左边索引 left,high 表示右边索引 right. 
+
+key 就是前面我们讲的 findVal
+
+![image-20200521121107619](https://guliedu-zhanbo.oss-cn-beijing.aliyuncs.com/blog/image/20200521121115.png)
+
+ ```java
+int mid=low+(high-low)*(key-arr[low])/(arr[high]-arr[low]) ;/*插值索引*/
+对应前面的代码公式： 
+int mid=left+(right – left)*(findVal – arr[left])/(arr[right] – arr[left]) 
+ ```
+
+> **插值查找应用案例：** 
+
+```java
+/**
+     *插值查找
+     * @param array
+     * @param left
+     * @param right
+     * @param findValue
+     * @return
+     */
+    public static int search(int [] array , int left ,int right ,int findValue){
+        //防止 findValue<array[0] || findValue>array[array.length-1]下标越界
+        if(left> right || findValue<array[0] || findValue>array[array.length-1])
+            return -1;
+        int mid = left+ ( right- left)* ( findValue - array[left]) / (array[right] - array[left]);
+        int midValue =array[mid];
+        if(findValue>midValue){  //右递归
+            return search(array,mid+1 ,right ,findValue);
+        }else if(findValue<midValue){ //左递归
+            return search(array,left,mid-1,findValue);
+        }else {
+            return mid;
+        }
+    }
+```
+
+> **插值查找注意事项：** 
+
+- 1) 对于数据量较大，关键字分布比较均匀的查找表来说，采用插值查找, 速度较快. 
+- 2) 关键字分布不均匀的情况下，该方法不一定比折半查找要好
+
+### 斐波那契查找
+
+> **斐波那契(黄金分割法)查找基本介绍:**
+
+- 1) 黄金分割点是指把一条线段分割为两部分，使其中一部分与全长之比等于另一部分与这部分之比。取其前三位 数字的近似值是 0.618。由于按此比例设计的造型十分美丽，因此称为黄金分割，也称为中外比。这是一个神
+  奇的数字，会带来意向不大的效果。
+- 2) 斐波那契数列 {1,1,2,3,5,8,13,21,34,55} 发现斐波那契数列的两个相邻数 的比例，无限接近 黄金分割值 0.618
+
+> **斐波那契(黄金分割法)原理:** 
+
+斐波那契查找原理与前两种相似，仅仅改变了中间结点（mid）的位置，mid 不再是中间或插值得到，而是位 于黄金分割点附近，即 mid=low+F(k-1)-1（F 代表斐波那契数列），如下图所示
+
+![image-20200521121330657](https://guliedu-zhanbo.oss-cn-beijing.aliyuncs.com/blog/image/20200521121331.png)
+
+> **对 F(k-1)-1 的理解**： 
+
+- 1) 由斐波那契数列 F[k]=F[k-1]+F[k-2] 的性质，可以得到 （F[k]-1）=（F[k-1]-1）+（F[k-2]-1）+1 。该式说明： 只要顺序表的长度为 F[k]-1，则可以将该表分成长度为 F[k-1]-1 和 F[k-2]-1 的两段，即如上图所示。从而中间位置为 mid=low+F(k-1)-1
+
+- 2) 类似的，每一子段也可以用相同的方式分割 
+
+- 3) 但顺序表长度 n 不一定刚好等于 F[k]-1，所以需要将原来的顺序表长度 n 增加至 F[k]-1。这里的 k 值只要能使 得 F[k]-1 恰好大于或等于 n 即可，由以下代码得到,顺序表长度增加后，新增的位置（从 n+1 到 F[k]-1 位置）， 都赋为 n 位置的值即可。 
+
+  ​	while(n>fib(k)-1) k++;
+
+斐波那契查找应用案例： 
+
+```java
+ /**
+     * 因为后面我们mid=low+F(k-1)-1，需要使用到斐波那契数列，因此我们需要先获取到一个斐波那契数列
+     * 非递归方法得到一个斐波那契数列
+     * @return
+     */
+    public static int[] fib() {
+        int[] f = new int[maxSize];
+        f[0] = 1;
+        f[1] = 1;
+        for (int i = 2; i < maxSize; i++) {
+            f[i] = f[i - 1] + f[i - 2];
+        }
+        return f;
+    }
+    /**
+     *使用非递归的方式
+     * @param a  数组
+     * @param key 我们需要查找的关键码(值)
+     * @return 返回对应的下标，如果没有-1
+     */
+    public static int fibSearch(int[] a, int key) {
+        int low = 0;
+        int high = a.length - 1;
+        int k = 0; //表示斐波那契分割数值的下标
+        int mid = 0; //存放mid值
+        int f[] = fib(); //获取到斐波那契数列
+        //获取到斐波那契分割数值的下标
+        while (high > f[k] - 1) {
+            k++;
+        }
+        //因为 f[k] 值 可能大于 a 的 长度，因此我们需要使用Arrays类，构造一个新的数组，并指向temp[]
+        //不足的部分会使用0填充
+        int[] temp = Arrays.copyOf(a, f[k]);
+        //实际上需求使用a数组最后的数填充 temp
+        //举例:
+        //temp = {1,8, 10, 89, 1000, 1234, 0, 0}  => {1,8, 10, 89, 1000, 1234, 1234, 1234,}
+        for (int i = high + 1; i < temp.length; i++) {
+            temp[i] = a[high];
+        }
+
+        // 使用while来循环处理，找到我们的数 key
+        while (low <= high) { // 只要这个条件满足，就可以找
+            mid = low + f[k - 1] - 1;
+            if (key < temp[mid]) { //我们应该继续向数组的前面查找(左边)
+                high = mid - 1;
+                //为甚是 k--
+                //说明
+                //1. 全部元素 = 前面的元素 + 后边元素
+                //2. f[k] = f[k-1] + f[k-2]
+                //因为 前面有 f[k-1]个元素,所以可以继续拆分 f[k-1] = f[k-2] + f[k-3]
+                //即 在 f[k-1] 的前面继续查找 k--
+                //即下次循环 mid = f[k-1-1]-1
+                k--;
+            } else if (key > temp[mid]) { // 我们应该继续向数组的后面查找(右边)
+                low = mid + 1;
+                //为什么是k -=2
+                //说明
+                //1. 全部元素 = 前面的元素 + 后边元素
+                //2. f[k] = f[k-1] + f[k-2]
+                //3. 因为后面我们有f[k-2] 所以可以继续拆分 f[k-1] = f[k-3] + f[k-4]
+                //4. 即在f[k-2] 的前面进行查找 k -=2
+                //5. 即下次循环 mid = f[k - 1 - 2] - 1
+                k -= 2;
+            } else { //找到
+                //需要确定，返回的是哪个下标
+                if (mid <= high) {
+                    return mid;
+                } else {
+                    return high;
+                }
+            }
+        }
+        return -1;
+    }
+```
+
+ 
